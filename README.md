@@ -1,22 +1,42 @@
-# Open WebUI Kurulum Rehberi
+# Open WebUI Installation Guide for Windows
 
-Bu README, Open WebUI'nin Windows ortamında PostgreSQL ve pgvector ile kurulumunu anlatmaktadır.
+This README provides detailed instructions for setting up Open WebUI with PostgreSQL and pgvector on Windows systems.
 
-## Gerekli Ortam Değişkenleri
+## Prerequisites
 
-Aşağıdaki içeriği `.env` dosyasına kaydedin:
+Before starting, ensure you have:
+- Windows 10 or 11
+- Administrative privileges
+- Internet connection
+
+## Installing Python and pip
+
+1. Download the latest Python installer from [python.org](https://www.python.org/downloads/)
+2. Run the installer and check "Add Python to PATH"
+3. Select "Install Now" for a standard installation or "Customize installation" for more options
+4. Verify installation by opening Command Prompt and typing:
+   ```
+   python --version
+   pip --version
+   ```
+
+## Required Environment Variables
+
+Create a `.env` file in your project directory with the following content:
 
 ```
-DATABASE_URL=postgresql://postgres:PWD@localhost:5432/postgres
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD_HERE@localhost:5432/postgres
 WEBUI_AUTH=true
 ENABLE_WEBSOCKET_SUPPORT=false
 VECTOR_DB=pgvector
 ENABLE_LOGIN_FORM=true
 ```
 
-## pgvector Kurulumu
+Replace `YOUR_PASSWORD_HERE` with your actual PostgreSQL password.
 
-Visual Studio ve PostgreSQL kurulu olduğunu varsayarak, aşağıdaki komutları bir CMD penceresinde çalıştırın:
+## Installing pgvector Extension
+
+Run the following commands in Command Prompt (CMD):
 
 ```batch
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
@@ -28,27 +48,29 @@ nmake /F Makefile.win
 nmake /F Makefile.win install
 ```
 
-Bu komutlar:
-1. Visual Studio geliştirme ortamını yükler
-2. PostgreSQL dizinini belirler
-3. pgvector eklentisini indirir
-4. pgvector'ü derler ve PostgreSQL'e yükler
+These commands:
+1. Load Visual Studio development environment
+2. Set PostgreSQL directory path
+3. Clone pgvector repository
+4. Compile and install pgvector extension to PostgreSQL
 
-## Open WebUI Kurulumu ve Çalıştırma
+Note: Adjust the paths if your Visual Studio or PostgreSQL are installed in different locations.
 
-PowerShell'de aşağıdaki komutları çalıştırın:
+## Installing and Running Open WebUI
+
+Execute these commands in PowerShell:
 
 ```powershell
-# Sanal ortam oluşturma
+# Create virtual environment
 python -m venv openwebui-env
 
-# Open WebUI'yi yükleme
+# Install Open WebUI
 pip install open-webui
 
-# Sanal ortamı aktifleştirme
+# Activate virtual environment
 .\openwebui-env\Scripts\activate
 
-# .env dosyasındaki değişkenleri ortam değişkenlerine yükleme
+# Load environment variables from .env file
 Get-Content .env | ForEach-Object {
     $name, $value = $_.split('=')
     if ($name -and $value) {
@@ -56,19 +78,47 @@ Get-Content .env | ForEach-Object {
     }
 }
 
-# Open WebUI'yi çalıştırma
+# Run Open WebUI
 open-webui serve
 ```
 
-## Notlar
+## Accessing the Interface
 
-- PostgreSQL'in çalışır durumda olduğundan emin olun
-- `.env` dosyasındaki veritabanı bağlantı bilgilerini kendi kurulumunuza göre düzenleyin
-- Güvenlik için production ortamında daha güçlü bir şifre kullanın
+Once running, you can access Open WebUI by opening your web browser and navigating to:
+```
+http://localhost:8080
+```
 
-## Sorun Giderme
+If this is your first time running Open WebUI, you'll need to create an admin account through the login form.
 
-Eğer pgvector kurulumunda sorun yaşarsanız:
-- PostgreSQL sürümünüzün pgvector ile uyumlu olduğundan emin olun
-- Visual Studio'nun C++ derleyici bileşenlerinin kurulu olduğunu kontrol edin
-- PostgreSQL'in PATH'de olduğunu doğrulayın
+## Notes and Troubleshooting
+
+### PostgreSQL Setup
+- Ensure PostgreSQL is installed and running
+- Verify the database credentials in your `.env` file match your PostgreSQL setup
+- For security in production environments, use a strong password
+
+### pgvector Installation Issues
+- Make sure Visual Studio includes C++ development tools
+- Verify your PostgreSQL version is compatible with pgvector
+- Check that PostgreSQL bin directory is in your system PATH
+
+### Connection Problems
+- If you can't access localhost:8080, check if another application is using that port
+- Verify that Open WebUI is running without errors in the terminal
+- Check Windows Firewall settings if accessing from another device on the network
+
+### Virtual Environment
+- If you close your terminal, you'll need to reactivate the virtual environment before running Open WebUI again
+- To deactivate the virtual environment when finished, simply type `deactivate`
+
+## Updating Open WebUI
+
+To update to the latest version:
+
+```powershell
+.\openwebui-env\Scripts\activate
+pip install --upgrade open-webui
+```
+
+This guide should help you successfully install and run Open WebUI on your Windows system with PostgreSQL and pgvector support.
